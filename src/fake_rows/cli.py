@@ -6,7 +6,7 @@ import sys
 
 from . import __version__
 from .output import FORMATS, write
-from .spec import KINDS, SpecError, generate, parse_columns
+from .spec import KIND_HELP, KINDS, SpecError, generate, parse_columns
 
 EPILOG = f"""\
 column specs:  [name=]kind[:args][?N%]   (?N% leaves about N% of values empty)
@@ -24,11 +24,12 @@ def build_parser() -> argparse.ArgumentParser:
         epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    p.add_argument("columns", nargs="+", metavar="COLUMN", help="column spec, see below")
+    p.add_argument("columns", nargs="*", metavar="COLUMN", help="column spec, see below")
     p.add_argument("-n", "--count", type=int, default=10, help="rows to generate (default 10)")
     p.add_argument("-s", "--seed", type=int, help="seed for reproducible output")
     p.add_argument("-f", "--format", choices=FORMATS, default="csv", help="output format (default csv)")
     p.add_argument("-o", "--output", metavar="FILE", help="write to FILE instead of stdout")
+    p.add_argument("--list-kinds", action="store_true", help="list column kinds and exit")
     p.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     return p
 
@@ -36,6 +37,13 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    if args.list_kinds:
+        width = max(map(len, KINDS))
+        for kind in KINDS:
+            print(f"{kind:<{width}}  {KIND_HELP[kind]}")
+        return 0
+    if not args.columns:
+        parser.error("at least one COLUMN is required (see --list-kinds)")
     if args.count < 0:
         parser.error("--count must be 0 or more")
     try:

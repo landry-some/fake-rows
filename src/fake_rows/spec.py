@@ -149,6 +149,27 @@ def _nullable(value: ValueFn, percent: float) -> ValueFn:
     return lambda rng, i: None if rng.random() < chance else value(rng, i)
 
 
+# One-line description per kind for ``fakerows --list-kinds``.
+KIND_HELP = {
+    "name": "first and last name, e.g. Keiko Ember",
+    "first": "first name",
+    "last": "last name",
+    "email": "address on example.com/.org/.net",
+    "uuid": "random version 4 UUID",
+    "address": "street, invented town and 5-digit code",
+    "phone": "(NXX) 555-01XX, a range reserved for fiction",
+    "bool": "true or false",
+    "word": "one lowercase word",
+    "sentence": "4 to 10 words, capitalised, ending in a full stop",
+    "int": "int:LOW..HIGH, whole number (default 1..100)",
+    "float": "float:LOW..HIGH, 2 decimals (default 0..1)",
+    "date": "date:START..END as YYYY-MM-DD (default 2000-01-01..2029-12-31)",
+    "datetime": "datetime:START..END dates, ISO time to the second",
+    "choice": "choice:A|B|C, one of the options",
+    "seq": "seq:START, row counter (default 1)",
+}
+
+
 def parse_column(text: str) -> Column:
     col, sep, rest = text.partition("=")
     if not sep:

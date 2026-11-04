@@ -34,5 +34,5 @@ Total: **26 h**
 
 ## Docs
 
-- [ ] `fakerows --list-kinds` and a full kind reference in the README — 1 h
+- [x] `fakerows --list-kinds` and a full kind reference in the README — 1 h
 - [ ] Recipes: seeding a SQLite table, feeding a pytest fixture — 1 h

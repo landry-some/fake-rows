@@ -67,3 +67,20 @@ def test_nullable_values_are_empty_in_csv_and_null_in_json(capsys):
     assert out.out == "id,x\n1,\n2,\n"
     _, out = run(capsys, "x=int?100%", "-n", "1", "-f", "json")
     assert json.loads(out.out) == [{"x": None}]
+
+
+def test_list_kinds_shows_every_kind(capsys):
+    from fake_rows.spec import KINDS
+
+    code, out = run(capsys, "--list-kinds")
+    assert code == 0
+    lines = out.out.splitlines()
+    assert [line.split()[0] for line in lines] == list(KINDS)
+    assert all(len(line.split(None, 1)) == 2 for line in lines)
+
+
+def test_no_columns_is_an_error(capsys):
+    with pytest.raises(SystemExit) as exc:
+        main([])
+    assert exc.value.code == 2
+    assert "at least one COLUMN" in capsys.readouterr().err

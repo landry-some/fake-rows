@@ -28,6 +28,7 @@ This puts a `fakerows` command in the virtual environment.
 
 ```bash
 fakerows COLUMN... [-n COUNT] [--seed SEED] [-f csv|json|jsonl] [-o FILE]
+fakerows --list-kinds
 ```
 
 Each `COLUMN` is `[name=]kind[:args][?N%]`. Without `name=`, the kind is used as
@@ -58,6 +59,7 @@ Options:
 - `-s`, `--seed`: same seed and same columns give the same output every time
 - `-f`, `--format`: `csv` (default), `json` (one array) or `jsonl` (one object per line)
 - `-o`, `--output`: write to a file instead of stdout
+- `--list-kinds`: print every kind with a one-line description and exit
 
 Quote specs that contain `|` so the shell does not treat it as a pipe.
 

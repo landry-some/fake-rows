@@ -125,3 +125,9 @@ def test_nullable_percentage_over_100():
 def test_question_mark_inside_choice_is_kept():
     rows = generate(parse_columns(["q=choice:why?|how?"]), 20, seed=1)
     assert {r["q"] for r in rows} == {"why?", "how?"}
+
+
+def test_every_kind_has_help_text():
+    from fake_rows.spec import KIND_HELP, KINDS
+
+    assert set(KIND_HELP) == set(KINDS)
