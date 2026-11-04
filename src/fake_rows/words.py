@@ -27,3 +27,12 @@ CITIES = [
 
 # Reserved for documentation and testing (RFC 2606), so emails never reach anyone.
 EMAIL_DOMAINS = ["example.com", "example.org", "example.net"]
+
+# Plain lowercase words for `word` and `sentence`.
+WORDS = [
+    "apple", "bright", "cloud", "dance", "early", "forest", "gentle", "harbor",
+    "island", "jolly", "kettle", "lemon", "morning", "narrow", "orange", "paper",
+    "quiet", "river", "silver", "table", "under", "velvet", "window", "yellow",
+    "anchor", "basket", "candle", "desert", "engine", "feather", "garden", "hollow",
+    "letter", "marble", "number", "pocket", "rabbit", "summer", "ticket", "wonder",
+]

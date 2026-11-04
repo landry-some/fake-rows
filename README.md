@@ -1,9 +1,9 @@
 # fake-rows
 
 A small command-line tool that generates fake test fixtures: names, emails,
-addresses, UUIDs, dates, numbers. You describe the columns on the command line and
-get CSV, JSON or JSONL back. With `--seed` the output is the same on every run, so
-it can go straight into tests.
+addresses, phone numbers, UUIDs, dates, numbers and text. You describe the columns
+on the command line and get CSV, JSON or JSONL back. With `--seed` the output is
+the same on every run, so it can go straight into tests.
 
 It is for developers who need a few believable rows for a test, a demo database or
 an import, and are tired of typing "John Doe, test@test.com" by hand.
@@ -40,8 +40,14 @@ column name.
 | `email` | none | `mara.vale7@example.com` |
 | `uuid` | none | random version 4 UUID |
 | `address` | none | `945 Meadow Rd, Graywater 11709` |
+| `phone` | none | `(337) 555-0172` (fictional 555-01xx range) |
+| `bool` | none | `True` / `False` (`true` / `false` in JSON) |
+| `word` | none | `harbor` |
+| `sentence` | none | `Harbor hollow engine garden anchor narrow.` |
 | `int` | `LOW..HIGH`, default `1..100` | `int:18..90` |
+| `float` | `LOW..HIGH`, default `0..1`, 2 decimals | `float:9.99..99.99` |
 | `date` | `START..END` as `YYYY-MM-DD`, default `2000-01-01..2029-12-31` | `date:2020-01-01..2024-12-31` |
+| `datetime` | `START..END` dates, same default as `date` | `2000-12-18T06:57:46` |
 | `choice` | options split by `\|` | `choice:free\|pro\|team` |
 | `seq` | start number, default `1` | `seq:100` gives 100, 101, ... |
 
@@ -70,8 +76,8 @@ fakerows id=seq:1000 email age=int:18..90 -n 1000 -f jsonl -o users.jsonl
 A bad spec exits with code 2 and says what is wrong:
 
 ```console
-$ fakerows phone
-fakerows: error: unknown kind 'phone' (known: address, choice, date, email, first, int, last, name, seq, uuid)
+$ fakerows colour
+fakerows: error: unknown kind 'colour' (known: address, bool, choice, date, datetime, email, first, float, int, last, name, phone, sentence, seq, uuid, word)
 ```
 
 ## Run the tests

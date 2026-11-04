@@ -50,9 +50,9 @@ def test_output_file(tmp_path, capsys):
 
 def test_bad_spec_exits_2_with_message(capsys):
     with pytest.raises(SystemExit) as exc:
-        main(["phone"])
+        main(["colour"])
     assert exc.value.code == 2
-    assert "unknown kind 'phone'" in capsys.readouterr().err
+    assert "unknown kind 'colour'" in capsys.readouterr().err
 
 
 def test_negative_count_is_rejected(capsys):

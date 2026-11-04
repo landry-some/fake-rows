@@ -2,7 +2,7 @@
 
 import random
 import uuid
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 
 from . import words
 
@@ -41,6 +41,33 @@ def make_int(rng: random.Random, low: int, high: int) -> int:
 def make_date(rng: random.Random, start: date, end: date) -> str:
     offset = rng.randint(0, (end - start).days)
     return (start + timedelta(days=offset)).isoformat()
+
+
+def make_float(rng: random.Random, low: float, high: float) -> float:
+    return round(rng.uniform(low, high), 2)
+
+
+def make_datetime(rng: random.Random, start: date, end: date) -> str:
+    seconds = rng.randint(0, (end - start).days * 86400 + 86399)
+    return (datetime.combine(start, time()) + timedelta(seconds=seconds)).isoformat()
+
+
+def phone(rng: random.Random) -> str:
+    # 555-0100..0199 is reserved for fiction in the North American plan.
+    return f"({rng.randint(200, 999)}) 555-01{rng.randint(0, 99):02d}"
+
+
+def make_bool(rng: random.Random) -> bool:
+    return rng.random() < 0.5
+
+
+def word(rng: random.Random) -> str:
+    return rng.choice(words.WORDS)
+
+
+def sentence(rng: random.Random) -> str:
+    text = " ".join(word(rng) for _ in range(rng.randint(4, 10)))
+    return text.capitalize() + "."
 
 
 def choice(rng: random.Random, options: list[str]) -> str:

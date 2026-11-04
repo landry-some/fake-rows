@@ -1,5 +1,6 @@
 """Parse column specs like ``joined=date:2020-01-01..2024-12-31`` into columns."""
 
+import math
 import random
 from dataclasses import dataclass
 from datetime import date
@@ -11,6 +12,7 @@ from . import generators as g
 ValueFn = Callable[[random.Random, int], Any]
 
 DEFAULT_INT = (1, 100)
+DEFAULT_FLOAT = (0.0, 1.0)
 # Fixed default so output does not change with the day it is run.
 DEFAULT_DATES = (date(2000, 1, 1), date(2029, 12, 31))
 
@@ -45,16 +47,31 @@ def _int_range(arg: str | None) -> tuple[int, int]:
     return lo, hi
 
 
-def _date_range(arg: str | None) -> tuple[date, date]:
+def _float_range(arg: str | None) -> tuple[float, float]:
+    if arg is None:
+        return DEFAULT_FLOAT
+    low, high = _split_range(arg, "float")
+    try:
+        lo, hi = float(low), float(high)
+    except ValueError:
+        raise SpecError(f"float range needs numbers, got {arg!r}") from None
+    if not (math.isfinite(lo) and math.isfinite(hi)):
+        raise SpecError(f"float range needs finite numbers, got {arg!r}")
+    if lo > hi:
+        raise SpecError(f"float range is reversed: {arg!r}")
+    return lo, hi
+
+
+def _date_range(arg: str | None, kind: str = "date") -> tuple[date, date]:
     if arg is None:
         return DEFAULT_DATES
-    low, high = _split_range(arg, "date")
+    low, high = _split_range(arg, kind)
     try:
         start, end = date.fromisoformat(low), date.fromisoformat(high)
     except ValueError:
-        raise SpecError(f"date range needs YYYY-MM-DD dates, got {arg!r}") from None
+        raise SpecError(f"{kind} range needs YYYY-MM-DD dates, got {arg!r}") from None
     if start > end:
-        raise SpecError(f"date range is reversed: {arg!r}")
+        raise SpecError(f"{kind} range is reversed: {arg!r}")
     return start, end
 
 
@@ -75,6 +92,16 @@ def _build_int(arg: str | None) -> ValueFn:
 def _build_date(arg: str | None) -> ValueFn:
     start, end = _date_range(arg)
     return lambda rng, _i: g.make_date(rng, start, end)
+
+
+def _build_float(arg: str | None) -> ValueFn:
+    lo, hi = _float_range(arg)
+    return lambda rng, _i: g.make_float(rng, lo, hi)
+
+
+def _build_datetime(arg: str | None) -> ValueFn:
+    start, end = _date_range(arg, "datetime")
+    return lambda rng, _i: g.make_datetime(rng, start, end)
 
 
 def _build_choice(arg: str | None) -> ValueFn:
@@ -99,8 +126,14 @@ KINDS: dict[str, Callable[[str | None], ValueFn]] = {
     "email": _no_arg(g.email),
     "uuid": _no_arg(g.make_uuid),
     "address": _no_arg(g.address),
+    "phone": _no_arg(g.phone),
+    "bool": _no_arg(g.make_bool),
+    "word": _no_arg(g.word),
+    "sentence": _no_arg(g.sentence),
     "int": _build_int,
+    "float": _build_float,
     "date": _build_date,
+    "datetime": _build_datetime,
     "choice": _build_choice,
     "seq": _build_seq,
 }

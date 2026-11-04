@@ -13,6 +13,7 @@ column specs:  [name=]kind[:args]
 kinds:         {", ".join(KINDS)}
 examples:      id=seq  user=name  email  joined=date:2020-01-01..2024-12-31
                age=int:18..90  plan=choice:free|pro|team  key=uuid  address
+               price=float:1..50  seen=datetime  phone  bio=sentence
 """
 
 

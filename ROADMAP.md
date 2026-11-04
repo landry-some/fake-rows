@@ -10,7 +10,7 @@ Total: **26 h**
 - [ ] Schema files (TOML) so a fixture set can be saved and reused — 3 h
 - [ ] Row-consistent fields: `email` built from the same row's `name` — 2 h
 - [ ] `--unique` per column with a clear error when the space runs out — 2 h
-- [ ] More kinds: `phone`, `bool`, `float:A..B`, `datetime`, `word`, `sentence` — 3 h
+- [x] More kinds: `phone`, `bool`, `float:A..B`, `datetime`, `word`, `sentence` — 3 h
 - [ ] SQL `INSERT` output for a given table name — 2 h
 - [ ] Nullable columns (`col=kind?10%` leaves 10% of values empty) — 1.5 h
 

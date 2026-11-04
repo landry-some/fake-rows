@@ -21,6 +21,23 @@ def test_date_range_argument():
     assert rows == [{"d": "2021-05-05"}, {"d": "2021-05-05"}]
 
 
+def test_float_range_argument():
+    rows = generate(parse_columns(["p=float:-1.5..-1.5"]), 3, seed=1)
+    assert [r["p"] for r in rows] == [-1.5, -1.5, -1.5]
+
+
+def test_datetime_range_argument():
+    rows = generate(parse_columns(["t=datetime:2021-05-05..2021-05-05"]), 5, seed=1)
+    assert all(r["t"].startswith("2021-05-05T") for r in rows)
+
+
+def test_new_kinds_without_arguments():
+    cols = parse_columns(["phone", "bool", "word", "sentence", "float", "datetime"])
+    row = next(generate(cols, 1, seed=3))
+    assert isinstance(row["bool"], bool)
+    assert 0 <= row["float"] <= 1
+
+
 def test_choice_options():
     rows = generate(parse_columns(["c=choice:x|y"]), 30, seed=1)
     assert {r["c"] for r in rows} == {"x", "y"}
@@ -52,13 +69,20 @@ def test_different_seeds_differ():
 @pytest.mark.parametrize(
     "spec, message",
     [
-        ("phone", "unknown kind 'phone'"),
+        ("colour", "unknown kind 'colour'"),
         ("x=", "missing kind"),
         ("int:5", "LOW..HIGH"),
         ("int:a..b", "whole numbers"),
         ("int:9..1", "reversed"),
         ("date:2020-13-01..2021-01-01", "YYYY-MM-DD"),
         ("date:2022-01-01..2021-01-01", "reversed"),
+        ("float:1..x", "float range needs numbers"),
+        ("float:2..1", "float range is reversed"),
+        ("float:0..inf", "finite"),
+        ("datetime:2020-01-01", "datetime range must look like"),
+        ("datetime:2022-01-01..2021-01-01", "datetime range is reversed"),
+        ("bool:yes", "bool takes no argument"),
+        ("phone:1", "phone takes no argument"),
         ("choice", "needs options"),
         ("choice:|", "needs options"),
         ("seq:one", "whole number"),
