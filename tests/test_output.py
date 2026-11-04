@@ -45,3 +45,23 @@ def test_jsonl_is_one_object_per_line():
 @pytest.mark.parametrize("fmt", ["csv", "json", "jsonl"])
 def test_output_ends_with_newline(fmt):
     assert render(fmt).endswith("\n")
+
+
+def test_json_matches_json_dump_layout():
+    assert render("json") == json.dumps(ROWS, indent=2, ensure_ascii=False) + "\n"
+    assert render("json", []) == "[]\n"
+
+
+@pytest.mark.parametrize("fmt", ["csv", "json", "jsonl"])
+def test_writers_stream_rows_one_at_a_time(fmt):
+    # Each row must reach the output before the next one is requested.
+    buf = io.StringIO()
+    seen = []
+
+    def rows():
+        for row in ROWS:
+            seen.append(len(buf.getvalue()))
+            yield row
+
+    write(rows(), FIELDS, fmt, buf)
+    assert seen[1] > seen[0]

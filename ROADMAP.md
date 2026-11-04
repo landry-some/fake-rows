@@ -18,7 +18,7 @@ Total: **26 h**
 
 - [ ] CSV quoting of values with commas, quotes and newlines in `choice` — 1 h
 - [ ] Date ranges that are reversed, equal or outside year 1–9999 — 1 h
-- [ ] Large `-n` (1M rows) should stream instead of building a list — 1.5 h
+- [x] Large `-n` (1M rows) should stream instead of building a list — 1.5 h
 - [ ] Clear errors for duplicate column names and empty choice lists — 0.5 h
 
 ## Refactors
