@@ -30,8 +30,9 @@ This puts a `fakerows` command in the virtual environment.
 fakerows COLUMN... [-n COUNT] [--seed SEED] [-f csv|json|jsonl] [-o FILE]
 ```
 
-Each `COLUMN` is `[name=]kind[:args]`. Without `name=`, the kind is used as the
-column name.
+Each `COLUMN` is `[name=]kind[:args][?N%]`. Without `name=`, the kind is used as
+the column name. A trailing `?N%` makes the column nullable: about N% of its values
+are left empty (an empty CSV field, `null` in JSON), e.g. `age=int:18..90?10%`.
 
 | Kind | Args | Example value |
 |---|---|---|
@@ -65,6 +66,9 @@ Quote specs that contain `|` so the shell does not treat it as a pipe.
 ```bash
 # 8 users, same output on every run (this is examples/users.csv)
 fakerows id=seq name email joined=date:2020-01-01..2024-12-31 'plan=choice:free|pro|team' -n 8 --seed 7
+
+# phone is missing for roughly 1 in 5 users
+fakerows id=seq name 'phone?20%' -n 10 --seed 1
 
 # JSON for an API mock
 fakerows id=uuid name address -n 3 -f json

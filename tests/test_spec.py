@@ -97,3 +97,31 @@ def test_bad_specs(spec, message):
 def test_duplicate_column_names():
     with pytest.raises(SpecError, match="duplicate column name 'email'"):
         parse_columns(["email", "email"])
+
+
+def test_nullable_column_leaves_about_that_share_empty():
+    rows = list(generate(parse_columns(["age=int:18..90?25%"]), 1000, seed=1))
+    nulls = sum(r["age"] is None for r in rows)
+    assert 200 < nulls < 300
+    assert all(18 <= r["age"] <= 90 for r in rows if r["age"] is not None)
+
+
+def test_nullable_bare_kind_keeps_kind_as_name():
+    col = parse_column("email?10%")
+    assert col.name == "email"
+
+
+@pytest.mark.parametrize("percent, expected", [("0%", 0), ("100%", 20)])
+def test_nullable_edges(percent, expected):
+    rows = generate(parse_columns([f"n=seq?{percent}"]), 20, seed=1)
+    assert sum(r["n"] is None for r in rows) == expected
+
+
+def test_nullable_percentage_over_100():
+    with pytest.raises(SpecError, match="0 to 100"):
+        parse_column("name?150%")
+
+
+def test_question_mark_inside_choice_is_kept():
+    rows = generate(parse_columns(["q=choice:why?|how?"]), 20, seed=1)
+    assert {r["q"] for r in rows} == {"why?", "how?"}

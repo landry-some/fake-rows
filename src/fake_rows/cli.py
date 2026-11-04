@@ -9,7 +9,7 @@ from .output import FORMATS, write
 from .spec import KINDS, SpecError, generate, parse_columns
 
 EPILOG = f"""\
-column specs:  [name=]kind[:args]
+column specs:  [name=]kind[:args][?N%]   (?N% leaves about N% of values empty)
 kinds:         {", ".join(KINDS)}
 examples:      id=seq  user=name  email  joined=date:2020-01-01..2024-12-31
                age=int:18..90  plan=choice:free|pro|team  key=uuid  address

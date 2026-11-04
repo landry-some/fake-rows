@@ -60,3 +60,10 @@ def test_negative_count_is_rejected(capsys):
         main(["name", "-n", "-1"])
     assert exc.value.code == 2
     assert "--count" in capsys.readouterr().err
+
+
+def test_nullable_values_are_empty_in_csv_and_null_in_json(capsys):
+    _, out = run(capsys, "id=seq", "x=int?100%", "-n", "2")
+    assert out.out == "id,x\n1,\n2,\n"
+    _, out = run(capsys, "x=int?100%", "-n", "1", "-f", "json")
+    assert json.loads(out.out) == [{"x": None}]

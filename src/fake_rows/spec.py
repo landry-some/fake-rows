@@ -2,6 +2,7 @@
 
 import math
 import random
+import re
 from dataclasses import dataclass
 from datetime import date
 from typing import Any, Callable
@@ -15,6 +16,10 @@ DEFAULT_INT = (1, 100)
 DEFAULT_FLOAT = (0.0, 1.0)
 # Fixed default so output does not change with the day it is run.
 DEFAULT_DATES = (date(2000, 1, 1), date(2029, 12, 31))
+
+
+# Trailing ``?N%`` makes a column nullable, e.g. ``age=int:18..90?10%``.
+NULLABLE = re.compile(r"\?(\d+(?:\.\d+)?)%$")
 
 
 class SpecError(ValueError):
@@ -139,10 +144,21 @@ KINDS: dict[str, Callable[[str | None], ValueFn]] = {
 }
 
 
+def _nullable(value: ValueFn, percent: float) -> ValueFn:
+    chance = percent / 100
+    return lambda rng, i: None if rng.random() < chance else value(rng, i)
+
+
 def parse_column(text: str) -> Column:
     col, sep, rest = text.partition("=")
     if not sep:
         col, rest = "", text
+    percent = None
+    if m := NULLABLE.search(rest):
+        percent = float(m.group(1))
+        if percent > 100:
+            raise SpecError(f"null percentage must be 0 to 100, got {m.group(0)!r}")
+        rest = rest[: m.start()]
     kind, colon, arg = rest.partition(":")
     col = col.strip() or kind
     if not kind:
@@ -150,7 +166,8 @@ def parse_column(text: str) -> Column:
     if kind not in KINDS:
         known = ", ".join(sorted(KINDS))
         raise SpecError(f"unknown kind {kind!r} (known: {known})")
-    return Column(col, KINDS[kind](arg if colon else None))
+    value = KINDS[kind](arg if colon else None)
+    return Column(col, value if percent is None else _nullable(value, percent))
 
 
 def parse_columns(texts: list[str]) -> list[Column]:

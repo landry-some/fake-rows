@@ -12,7 +12,7 @@ Total: **26 h**
 - [ ] `--unique` per column with a clear error when the space runs out — 2 h
 - [x] More kinds: `phone`, `bool`, `float:A..B`, `datetime`, `word`, `sentence` — 3 h
 - [ ] SQL `INSERT` output for a given table name — 2 h
-- [ ] Nullable columns (`col=kind?10%` leaves 10% of values empty) — 1.5 h
+- [x] Nullable columns (`col=kind?10%` leaves 10% of values empty) — 1.5 h
 
 ## Bugs and edge cases
 
